@@ -1,0 +1,19 @@
+import express from "express";
+import { getProductTypesByProductId, getProductTypeById, createProductWithProductsTypes, deleteProductType, updateProductTypeByID, getProductTypes, createProduct, getAllProducts, getProductById, updateProductById, deleteProductById, createProductType } from "../controllers/productController.js";
+
+const router = express.Router();
+
+router.post("/create", createProduct);
+router.get("/products", getAllProducts);
+router.post("/createVariants", createProductWithProductsTypes)
+router.post("/productType", createProductType);
+router.get("/productTypes", getProductTypes);
+router.get("/productType/:id", getProductTypeById);
+router.get("/productType/product/:id", getProductTypesByProductId);
+router.post("/productType/:id", updateProductTypeByID);
+router.delete("/productType/:id", deleteProductType);
+router.get("/:id", getProductById);
+router.post("/:id", updateProductById);
+router.delete("/:id", deleteProductById);
+
+export default router;
