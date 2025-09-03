@@ -78,7 +78,7 @@ export const updateProductTypesByIdService = async (data) => {
 
 export const deleteProductTypeService = async (email) => {
     const req = await pool.query("SELECT * FROM orders WHERE email = $1", [email]);
-    console.log(req.rows)
+
     const result = req.rows[0];
 
     return result;

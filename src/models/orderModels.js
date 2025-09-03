@@ -37,7 +37,7 @@ export const deleteOrderByIdService = async (id) => {
 
 export const getOrderByEmailService = async (email) => {
     const req = await pool.query("SELECT * FROM orders WHERE email = $1", [email]);
-    console.log(req.rows)
+
     const result = req.rows[0];
 
     return result;

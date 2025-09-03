@@ -39,3 +39,23 @@ export const loginUserService = async (email, password) => {
     delete user.password;
     return user;
 };
+
+export const authGoogleUserService = async (data) => {
+    const result = await pool.query("SELECT * FROM users WHERE email=$1", [data.email]);
+    const user = result.rows[0];
+    if (!user) {
+        const hashedPassword = await bcrypt.hash(data.email, 10);
+        const result = await pool.query(
+            "INSERT INTO users (email, name, surname, password) VALUES ($1, $2, $3, $4) RETURNING id, email, name, surname",
+            [data.email, data.name, data.surname, hashedPassword]
+        );
+
+        return result.rows[0];
+    };
+
+    const match = await bcrypt.compare(data.email, user.password);
+    if (!match) return null;
+
+    delete user.password;
+    return user;
+};

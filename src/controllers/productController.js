@@ -81,7 +81,6 @@ export const createProductType = async (req, res, next) => {
 }
 
 export const getProductTypes = async (req, res, next) => {
-    console.log('xDDDDDD')
     try {
         const product = await getProductTypesService();
         if (!product) {

@@ -4,6 +4,7 @@ import {
     getUserByIdService,
     updateUserByIdService,
     loginUserService,
+    authGoogleUserService,
 } from "../models/userModel.js";
 
 const handleResponse = (res, status, message, data = null) => {
@@ -12,6 +13,7 @@ const handleResponse = (res, status, message, data = null) => {
 
 export const createUser = async (req, res, next) => {
     const { name, email, surname, password } = req.body;
+
     try {
         const newUser = await createUserService(name, email, surname, password);
         if (!newUser) {
@@ -56,8 +58,21 @@ export const updateUserById = async (req, res, next) => {
 
 export const loginUser = async (req, res, next) => {
     const { email, password } = req.body;
+
     try {
         const login = await loginUserService(email, password);
+        if (!login) {
+            return handleResponse(res, 401, "Invalid login credentials");
+        }
+        handleResponse(res, 200, "User logged in successfully", login);
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const authGoogleUser = async (req, res, next) => {
+    try {
+        const login = await authGoogleUserService(req.body);
         if (!login) {
             return handleResponse(res, 401, "Invalid login credentials");
         }
