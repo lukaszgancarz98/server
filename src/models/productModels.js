@@ -102,3 +102,12 @@ export const createProductWithProductsTypesService = async (product, productType
 
     return { product: resultProduct.rows[0], productTypes: resultsProductTypes };
 };
+
+export const updateProductProductTypesPriceService = async (id, price) => {
+    const req = await pool.query(
+        'UPDATE "productType" SET price=$1 WHERE "productId"=$2 RETURNING *',
+        [price, id]
+    );
+
+    return req.rows;
+};

@@ -11,6 +11,7 @@ import {
     deleteProductTypeService,
     createProductWithProductsTypesService,
     getProductTypesByProductIdService,
+    updateProductProductTypesPriceService,
 } from "../models/productModels.js";
 
 const handleResponse = (res, status, message, data = null) => {
@@ -153,5 +154,18 @@ export const createProductWithProductsTypes = async (req, res, next) => {
         handleResponse(res, 200, "Product adn ProductTypes created successfully", response);
     } catch (err) {
         next(err);
+    }
+}
+
+export const updateProductProductTypesPrice = async (req, res, next) => {
+
+    try {
+        const response = await updateProductProductTypesPriceService(req.params.id, req.params.price);
+        if (!response) {
+            return handleResponse(res, 404, "Error");
+        }
+        handleResponse(res, 200, "Product adn ProductTypes created successfully", response);
+    } catch (err) {
+        next(err)
     }
 }
