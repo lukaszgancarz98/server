@@ -2,7 +2,7 @@ import pool from "../config/db.js";
 
 export const getAllOrdersService = async () => {
     const result = await pool.query("SELECT * FROM orders");
-    return result;
+    return result.rows;
 };
 
 export const getOrderByIdService = async (id) => {
@@ -41,4 +41,14 @@ export const getOrderByEmailService = async (email) => {
     const result = req.rows[0];
 
     return result;
-}
+};
+
+export const updateOrderDetailsService = async (id, orderDetails) => {
+    const data = JSON.stringify(orderDetails);
+
+    const req = await pool.query('UPDATE orders SET "orderDetails"=$1 WHERE id=$2 RETURNING *', [data, id]);
+
+    const result = req.rows[0];
+
+    return result;
+};

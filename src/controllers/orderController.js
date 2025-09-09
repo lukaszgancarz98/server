@@ -5,6 +5,7 @@ import {
     updateOrderByIdService,
     deleteOrderByIdService,
     getOrderByEmailService,
+    updateOrderDetailsService,
 } from "../models/orderModels.js";
 
 const handleResponse = (res, status, message, data = null) => {
@@ -76,4 +77,13 @@ export const getOrderByEmail = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
-}
+};
+
+export const updateOrderDetails = async (req, res, next) => {
+    try {
+        const updateOrder = await updateOrderDetailsService(req.params.id, req.body);
+        handleResponse(res, 200, "Order updated successfully", updateOrder);
+    } catch (err) {
+        next(err);
+    }
+};

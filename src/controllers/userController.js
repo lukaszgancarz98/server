@@ -5,6 +5,7 @@ import {
     updateUserByIdService,
     loginUserService,
     authGoogleUserService,
+    loginAdminUserService,
 } from "../models/userModel.js";
 
 const handleResponse = (res, status, message, data = null) => {
@@ -73,6 +74,20 @@ export const loginUser = async (req, res, next) => {
 export const authGoogleUser = async (req, res, next) => {
     try {
         const login = await authGoogleUserService(req.body);
+        if (!login) {
+            return handleResponse(res, 401, "Invalid login credentials");
+        }
+        handleResponse(res, 200, "User logged in successfully", login);
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const loginAdminUser = async (req, res, next) => {
+    const { email, password } = req.body;
+
+    try {
+        const login = await loginAdminUserService(email, password);
         if (!login) {
             return handleResponse(res, 401, "Invalid login credentials");
         }
