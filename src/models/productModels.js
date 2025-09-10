@@ -2,8 +2,8 @@ import pool from "../config/db.js";
 
 export const createProductService = async (data) => {
     const result = await pool.query(
-        "INSERT INTO products (name, description, image) VALUES ($1, $2, $3) RETURNING *",
-        [data.name, data.description, data.image]
+        "INSERT INTO products (name, description, image, type) VALUES ($1, $2, $3, $4) RETURNING *",
+        [data.name, data.description, data.image, data.type]
     );
 
     return result.rows[0];
