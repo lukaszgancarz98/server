@@ -14,8 +14,8 @@ export const getUserByIdService = async (id) => {
 export const createUserService = async (name, email, surname, password) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
-        "INSERT INTO users (email, name, surname, password) VALUES ($1, $2, $3, $4) RETURNING id, email, name, surname",
-        [email, name, surname, hashedPassword]
+        "INSERT INTO users (email, name, surname, password, type) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, name, surname",
+        [email, name, surname, hashedPassword, 'user']
     );
     return result.rows[0];
 };
@@ -57,8 +57,8 @@ export const authGoogleUserService = async (data) => {
     if (!user) {
         const hashedPassword = await bcrypt.hash(data.email, 10);
         const result = await pool.query(
-            "INSERT INTO users (email, name, surname, password) VALUES ($1, $2, $3, $4) RETURNING id, email, name, surname",
-            [data.email, data.name, data.surname, hashedPassword]
+            "INSERT INTO users (email, name, surname, password, type) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, name, surname",
+            [data.email, data.name, data.surname, hashedPassword, 'user']
         );
 
         return result.rows[0];
