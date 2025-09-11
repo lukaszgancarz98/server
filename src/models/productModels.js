@@ -23,7 +23,7 @@ export const getProductByIdService = async (id) => {
 };
 
 export const getProductTypesByProductIdService = async (id) => {
-    const req = await pool.query("SELECT * FROM productType WHERE productId = $1", [id]);
+    const req = await pool.query('SELECT * FROM "productType" WHERE "productId" = $1', [id]);
     const result = req.rows;
 
     return result;
