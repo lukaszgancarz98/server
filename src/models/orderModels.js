@@ -52,3 +52,26 @@ export const updateOrderDetailsService = async (id, orderDetails) => {
 
     return result;
 };
+
+export const updateOrderPaymentToken = async (data, id) => {
+    const { expires_in, access_token } = data;
+
+    let now = new Date();
+
+    now.setSeconds(now.getSeconds() + expires_in);
+
+    const req = await pool.query('UPDATE orders SET token=$1, token_expire_date=$2 WHERE id=$3 RETURNING *', [access_token, now, id]);
+
+    const result = req.rows[0];
+
+    return result.token;
+};
+
+export const getOrderPaymentToken = async (id) => {
+    const req = await pool.query("SELECT * FROM orders WHERE id=$1", [id]);
+
+    const result = req.rows[0];
+
+    return { token: result.token, expire: result.token_expire_date};
+};
+
