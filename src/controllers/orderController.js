@@ -8,7 +8,9 @@ import {
     updateOrderDetailsService,
     updateOrderPaymentToken,
     getOrderPaymentToken,
-    updateProductAmountService
+    updateProductAmountService,
+    getOrderPaymentTokenAndId,
+    getOrdersByIdService
 } from "../models/orderModels.js";
 import dotenv from "dotenv";
 
@@ -53,8 +55,8 @@ export const getOrderById = async (req, res, next) => {
 };
 
 export const updateOrderById = async (req, res, next) => {
-    const { id, email, status, products, price } = req.body;
-    const dataReceived = { email, status, products, price };
+    const { id, email, status, products, price, paymentorder_id, payment_id, payment_date } = req.body;
+    const dataReceived = { email, status, products, price, paymentorder_id, payment_id, payment_date };
     const data = Object.entries(dataReceived).filter(([key, value]) => value !== undefined);
     try {
         const updateOrder = await updateOrderByIdService(id, data);
@@ -175,6 +177,8 @@ export const payment = async (req, res, next) => {
 
             const data = await response.json();
             
+            await updateOrderByIdService(id, [ [ 'paymentorder_id', data.orderId ] ]);
+            
             handleResponse(res, 200, "Payment authorized", data);
         } catch (err) {
             next(err);
@@ -182,4 +186,51 @@ export const payment = async (req, res, next) => {
     }
 
     next('Token not found, please refresh page');
+};
+
+export const checkPayment = async (req, res, next) => {
+    //https://secure.payu.com/api/v2_1/orders/{orderId} original
+    //https://secure.snd.payu.com/api/v2_1/orders/{orderId} sandbox
+    const id = req.params.id;
+
+    const getData = await getOrderPaymentTokenAndId(id);
+    if (getData.expire) {
+        const now = new Date();
+
+        if (!(now < new Date(getData.expire))) {
+            next('Token expired, please refresh page');
+
+            return;
+        }
+
+        const url = `https://secure.snd.payu.com/api/v2_1/orders/${getData.paymentorder_id}`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getData.token}`,
+                },
+                redirect: 'manual',
+            });
+
+            const data = await response.json();
+            
+            handleResponse(res, 200, "Payment authorized", data);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    next('Token not found, please refresh page');
+};
+
+export const getOrdersById = async (req, res, next) => {
+    try {
+        const updateOrder = await getOrdersByIdService(req.params.id);
+        handleResponse(res, 200, "Order updated successfully", updateOrder);
+    } catch (err) {
+        next(err);
+    }
 };

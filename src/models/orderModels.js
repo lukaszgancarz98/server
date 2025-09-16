@@ -8,7 +8,7 @@ export const getAllOrdersService = async () => {
 export const getOrderByIdService = async (id) => {
     const result = await pool.query("SELECT * FROM orders WHERE id = $1", [id]);
     
-    const resultData = result.rows.filter(item => !item.finalizeDate && !item.paymentDate);
+    const resultData = result.rows.filter(item => !item.finalize_date && !item.payment_date);
 
     return resultData[0];
 };
@@ -41,7 +41,7 @@ export const deleteOrderByIdService = async (id) => {
 export const getOrderByEmailService = async (email) => {
     const req = await pool.query("SELECT * FROM orders WHERE email = $1", [email]);
 
-    const result = req.rows.filter(item => !item.finalizeDate && !item.paymentDate);
+    const result = req.rows.filter(item => !item.finalize_date && !item.payment_date);
 
     return result[0];
 };
@@ -78,6 +78,14 @@ export const getOrderPaymentToken = async (id) => {
     return { token: result.token, expire: result.token_expire_date};
 };
 
+export const getOrderPaymentTokenAndId = async (id) => {
+    const req = await pool.query("SELECT * FROM orders WHERE id=$1", [id]);
+
+    const result = req.rows[0];
+
+    return { token: result.token, expire: result.token_expire_date, paymentorder_id: result.paymentorder_id };
+};
+
 export const updateProductAmountService = async (id, amount) => {
     const req = await pool.query('SELECT * FROM "productType" WHERE id=$1', [id]);
 
@@ -95,4 +103,10 @@ export const updateProductAmountService = async (id, amount) => {
     return undefined;
 };
 
+export const getOrdersByIdService = async (id) => {
+    const request = await pool.query("SELECT * FROM users WHERE id=$1", [id]);
+    const userEmail = request.rows[0].email;
+    const req = await pool.query("SELECT * FROM orders WHERE email=$1", [userEmail]);
 
+    return req.rows;
+};

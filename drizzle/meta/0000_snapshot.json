@@ -209,14 +209,14 @@
           "notNull": true,
           "default": "CURRENT_TIMESTAMP"
         },
-        "finalizeDate": {
-          "name": "finalizeDate",
+        "finalize_date": {
+          "name": "finalize_date",
           "type": "date",
           "primaryKey": false,
           "notNull": false
         },
-        "paymentDate": {
-          "name": "paymentDate",
+        "payment_date": {
+          "name": "payment_date",
           "type": "date",
           "primaryKey": false,
           "notNull": false
