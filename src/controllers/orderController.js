@@ -7,7 +7,8 @@ import {
     getOrderByEmailService,
     updateOrderDetailsService,
     updateOrderPaymentToken,
-    getOrderPaymentToken
+    getOrderPaymentToken,
+    updateProductAmountService
 } from "../models/orderModels.js";
 import dotenv from "dotenv";
 
@@ -87,6 +88,16 @@ export const getOrderByEmail = async (req, res, next) => {
 export const updateOrderDetails = async (req, res, next) => {
     try {
         const updateOrder = await updateOrderDetailsService(req.params.id, req.body);
+        handleResponse(res, 200, "Order updated successfully", updateOrder);
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const updateProductAmount = async (req, res, next) => {
+    const { amount } = req.body;
+    try {
+        const updateOrder = await updateProductAmountService(req.params.id, amount);
         handleResponse(res, 200, "Order updated successfully", updateOrder);
     } catch (err) {
         next(err);

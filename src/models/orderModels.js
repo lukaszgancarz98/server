@@ -7,7 +7,10 @@ export const getAllOrdersService = async () => {
 
 export const getOrderByIdService = async (id) => {
     const result = await pool.query("SELECT * FROM orders WHERE id = $1", [id]);
-    return result.rows[0];
+    
+    const resultData = result.rows.filter(item => !item.finalizeDate && !item.paymentDate);
+
+    return resultData[0];
 };
 
 export const createOrderService = async (price, products, email, status) => {
@@ -38,9 +41,9 @@ export const deleteOrderByIdService = async (id) => {
 export const getOrderByEmailService = async (email) => {
     const req = await pool.query("SELECT * FROM orders WHERE email = $1", [email]);
 
-    const result = req.rows[0];
+    const result = req.rows.filter(item => !item.finalizeDate && !item.paymentDate);
 
-    return result;
+    return result[0];
 };
 
 export const updateOrderDetailsService = async (id, orderDetails) => {
@@ -74,4 +77,22 @@ export const getOrderPaymentToken = async (id) => {
 
     return { token: result.token, expire: result.token_expire_date};
 };
+
+export const updateProductAmountService = async (id, amount) => {
+    const req = await pool.query('SELECT * FROM "productType" WHERE id=$1', [id]);
+
+    if (req.rows.length > 0) {
+
+        const dbAmount = Number(req.rows[0].sale_amount);
+        
+        if(dbAmount > 0) {
+            const calculatedAmount = dbAmount + Number(amount);
+            const response = await pool.query('UPDATE "productType" SET sale_amount=$1 WHERE id=$2 RETURNING *', [calculatedAmount, id]);
+
+            return response.rows[0];
+        }
+    }
+    return undefined;
+};
+
 
