@@ -20,10 +20,14 @@ const handleResponse = (res, status, message, data = null) => {
 
 dotenv.config();
 
+//https://secure.payu.com original
+//https://secure.snd.payu.com sandbox
+const url = process.env.PAYMENT_PROD === "true" ? 'https://secure.payu.com' : 'https://secure.snd.payu.com';
+
 export const createOrder = async (req, res, next) => {
-    const { price, products, email, status } = req.body;
+    const { price, products, email } = req.body;
     try {
-        const newOrder = await createOrderService(price, products, email, status);
+        const newOrder = await createOrderService(price, products, email);
         if (!newOrder) {
             return handleResponse(res, 400, "Order not created");
         }
@@ -55,8 +59,8 @@ export const getOrderById = async (req, res, next) => {
 };
 
 export const updateOrderById = async (req, res, next) => {
-    const { id, email, status, products, price, paymentorder_id, payment_id, payment_date } = req.body;
-    const dataReceived = { email, status, products, price, paymentorder_id, payment_id, payment_date };
+    const { id, email, products, price, paymentorder_id, payment_id, payment_date } = req.body;
+    const dataReceived = { email, products, price, paymentorder_id, payment_id, payment_date };
     const data = Object.entries(dataReceived).filter(([key, value]) => value !== undefined);
     try {
         const updateOrder = await updateOrderByIdService(id, data);
@@ -107,9 +111,7 @@ export const updateProductAmount = async (req, res, next) => {
 };
 
 export const authPayment = async (req, res, next) => {
-    //https://secure.payu.com/pl/standard/user/oauth/authorize original
-    //https://secure.snd.payu.com/pl/standard/user/oauth/authorize sandbox
-    const url = 'https://secure.snd.payu.com/pl/standard/user/oauth/authorize';
+    const link = `${url}/pl/standard/user/oauth/authorize`;
     const id = req.params.id;
     const params = new URLSearchParams();
     params.append('grant_type', process.env.GRANT_TYPE);
@@ -117,17 +119,20 @@ export const authPayment = async (req, res, next) => {
     params.append('client_secret', process.env.CLIENT_SECRET);
 
     const tokenExist = await getOrderPaymentToken(id);
-    if (tokenExist.expire) {
+    console.log(tokenExist)
+    if (tokenExist.expire && tokenExist.token) {
+        console.log('XD1')
         const now = new Date();
         if (now < new Date(tokenExist.expire)) {
+            console.log('XD2')
             handleResponse(res, 200, "Payment authorized", tokenExist.token);
 
             return;
         }
     }
-
+    console.log('XD3', link)
     try {
-        const response = await fetch(url, {
+        const response = await fetch(link, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -136,7 +141,7 @@ export const authPayment = async (req, res, next) => {
         });
 
         const data = await response.json();
-
+        console.log(data, 'XD4')
         await updateOrderPaymentToken(data, id);
         
         handleResponse(res, 200, "Payment authorized", data.access_token);
@@ -146,26 +151,24 @@ export const authPayment = async (req, res, next) => {
 };
 
 export const payment = async (req, res, next) => {
-    //https://secure.payu.com/api/v2_1/orders original
-    //https://secure.snd.payu.com/api/v2_1/orders sandbox
-    const url = 'https://secure.snd.payu.com/api/v2_1/orders';
+    const link = `${url}/api/v2_1/orders`;
     const id = req.params.id;
     const data = req.body;
 
     const getToken = await getOrderPaymentToken(id);
     if (getToken.expire) {
         const now = new Date();
-
+        console.log('XD2')
         if (!(now < new Date(getToken.expire))) {
             next('Token expired, please refresh page');
-
+            console.log('XD1')
             return;
         }
-
+        console.log('XD')
         const payload = {...data, merchantPosId: process.env.CLIENT_ID};
 
         try {
-            const response = await fetch(url, {
+            const response = await fetch(link, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
@@ -189,8 +192,6 @@ export const payment = async (req, res, next) => {
 };
 
 export const checkPayment = async (req, res, next) => {
-    //https://secure.payu.com/api/v2_1/orders/{orderId} original
-    //https://secure.snd.payu.com/api/v2_1/orders/{orderId} sandbox
     const id = req.params.id;
 
     const getData = await getOrderPaymentTokenAndId(id);
@@ -203,10 +204,10 @@ export const checkPayment = async (req, res, next) => {
             return;
         }
 
-        const url = `https://secure.snd.payu.com/api/v2_1/orders/${getData.paymentorder_id}`;
+        const link = `${url}/api/v2_1/orders/${getData.paymentorder_id}`;
 
         try {
-            const response = await fetch(url, {
+            const response = await fetch(link, {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",

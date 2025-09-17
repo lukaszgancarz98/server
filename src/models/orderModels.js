@@ -13,10 +13,10 @@ export const getOrderByIdService = async (id) => {
     return resultData[0];
 };
 
-export const createOrderService = async (price, products, email, status) => {
+export const createOrderService = async (price, products, email) => {
     const result = await pool.query(
-        "INSERT INTO orders (price, products, email, status) VALUES ($1, $2, $3, $4) RETURNING id, price, products, email, status",
-        [price, products, email, status]
+        "INSERT INTO orders (price, products, email) VALUES ($1, $2, $3) RETURNING id, price, products, email",
+        [price, products, email]
     );
     return result.rows[0];
 };
@@ -67,7 +67,7 @@ export const updateOrderPaymentToken = async (data, id) => {
 
     const result = req.rows[0];
 
-    return result.token;
+    return result?.token;
 };
 
 export const getOrderPaymentToken = async (id) => {
@@ -75,7 +75,7 @@ export const getOrderPaymentToken = async (id) => {
 
     const result = req.rows[0];
 
-    return { token: result.token, expire: result.token_expire_date};
+    return { token: result?.token, expire: result?.token_expire_date};
 };
 
 export const getOrderPaymentTokenAndId = async (id) => {
