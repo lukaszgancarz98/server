@@ -7,10 +7,8 @@ export const getAllOrdersService = async () => {
 
 export const getOrderByIdService = async (id) => {
     const result = await pool.query("SELECT * FROM orders WHERE id = $1", [id]);
-    
-    const resultData = result.rows.filter(item => !item.finalize_date && !item.payment_date);
 
-    return resultData[0];
+    return result.rows[0];
 };
 
 export const createOrderService = async (price, products, email) => {
