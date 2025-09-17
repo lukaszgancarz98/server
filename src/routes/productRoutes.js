@@ -1,5 +1,5 @@
 import express from "express";
-import { getProductTypesByProductId, getProductTypeById, createProductWithProductsTypes, deleteProductType, updateProductTypeByID, getProductTypes, createProduct, getAllProducts, getProductById, updateProductById, deleteProductById, createProductType, updateProductProductTypesPrice } from "../controllers/productController.js";
+import { deleteProductWithProductTypes, getProductTypesByProductId, getProductTypeById, createProductWithProductsTypes, deleteProductType, updateProductTypeByID, getProductTypes, createProduct, getAllProducts, getProductById, updateProductById, deleteProductById, createProductType, updateProductProductTypesPrice } from "../controllers/productController.js";
 
 const router = express.Router();
 
@@ -12,6 +12,7 @@ router.get("/productType/:id", getProductTypeById);
 router.get("/productType/product/:id", getProductTypesByProductId);
 router.post("/productType/:id", updateProductTypeByID);
 router.delete("/productType/:id", deleteProductType);
+router.delete("/all/:id", deleteProductWithProductTypes);
 router.post("/:id/productTypes/price/:price", updateProductProductTypesPrice);
 router.get("/:id", getProductById);
 router.post("/:id", updateProductById);

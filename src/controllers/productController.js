@@ -12,6 +12,7 @@ import {
     createProductWithProductsTypesService,
     getProductTypesByProductIdService,
     updateProductProductTypesPriceService,
+    deleteProductWithProductTypesService,
 } from "../models/productModels.js";
 
 const handleResponse = (res, status, message, data = null) => {
@@ -135,6 +136,18 @@ export const updateProductTypeByID = async (req, res, next) => {
 export const deleteProductType = async (req, res, next) => {
     try {
         const product = await deleteProductTypeService(req.params.id);
+        if (!product) {
+            return handleResponse(res, 404, "ProductType not found");
+        }
+        handleResponse(res, 200, "Product deleted successfully", product);
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const deleteProductWithProductTypes = async (req, res, next) => {
+    try {
+        const product = await deleteProductWithProductTypesService(req.params.id);
         if (!product) {
             return handleResponse(res, 404, "ProductType not found");
         }

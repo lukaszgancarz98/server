@@ -43,6 +43,21 @@ export const deleteProductByIdService = async (id) => {
     return result;
 };
 
+export const deleteProductWithProductTypesService = async (id) => {
+    const get = await pool.query('SELECT * FROM "productType" WHERE "productId"=$1', [id]);
+
+    const promises = get.rows.map(element => {
+        return pool.query('DELETE FROM "productType" WHERE id=$1', [element.id]);
+    });
+
+    const results = await Promise.all(promises);
+
+    const req = await pool.query("DELETE FROM products WHERE id=$1", [id]);
+    const result = req.rows[0];
+
+    return {result, results};
+};
+
 export const createProductTypeService = async (data) => {
     const req = await pool.query(
         "INSERT INTO productType (price, size, color, shortDescription, images, sizePlaceHolder, stock_quantity, productId) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
