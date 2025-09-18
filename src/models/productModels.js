@@ -67,6 +67,26 @@ export const createProductTypeService = async (data) => {
     return result;
 };
 
+export const addDocumentService = async (originalname, buffer) => {
+    const req = await pool.query(
+        "INSERT INTO files (name, file) VALUES ($1, $2) RETURNING *",
+        [originalname, buffer]);
+
+    const result = req.rows[0];
+
+    return result;
+};
+
+export const getDocumentService = async (id) => {
+    const req = await pool.query(
+        "SELECT * FROM files WHERE id=$1",
+        [id]);
+
+    const result = req.rows[0];
+
+    return result;
+};
+
 export const getProductTypesService = async () => {
     const req = await pool.query('SELECT * FROM "productType"');
     const result = req.rows;
@@ -75,7 +95,7 @@ export const getProductTypesService = async () => {
 };
 
 export const getProductTypesByIdService = async (id) => {
-    const req = await pool.query("DELETE FROM productType WHERE id=$1", [id]);
+    const req = await pool.query('SELECT * FROM "productType" WHERE id=$1', [id]);
     const result = req.rows[0];
 
     return result;

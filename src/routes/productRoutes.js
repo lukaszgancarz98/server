@@ -1,7 +1,9 @@
 import express from "express";
-import { deleteProductWithProductTypes, getProductTypesByProductId, getProductTypeById, createProductWithProductsTypes, deleteProductType, updateProductTypeByID, getProductTypes, createProduct, getAllProducts, getProductById, updateProductById, deleteProductById, createProductType, updateProductProductTypesPrice } from "../controllers/productController.js";
+import multer from "multer";
+import { getDocuments, getDocument, addDocument, deleteProductWithProductTypes, getProductTypesByProductId, getProductTypeById, createProductWithProductsTypes, deleteProductType, updateProductTypeByID, getProductTypes, createProduct, getAllProducts, getProductById, updateProductById, deleteProductById, createProductType, updateProductProductTypesPrice } from "../controllers/productController.js";
 
 const router = express.Router();
+const upload = multer();
 
 router.post("/create", createProduct);
 router.post("/products", getAllProducts);
@@ -13,6 +15,9 @@ router.get("/productType/product/:id", getProductTypesByProductId);
 router.post("/productType/:id", updateProductTypeByID);
 router.delete("/productType/:id", deleteProductType);
 router.delete("/all/:id", deleteProductWithProductTypes);
+router.post("/document", upload.single("file"), addDocument);
+router.post("/document/:id", getDocument);
+router.post("/documents/:id", getDocuments);
 router.post("/:id/productTypes/price/:price", updateProductProductTypesPrice);
 router.get("/:id", getProductById);
 router.post("/:id", updateProductById);
