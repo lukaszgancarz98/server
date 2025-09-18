@@ -6,6 +6,7 @@ import userRouter from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRouter from "./routes/orderRoutes.js";
 import errorHandling from "./middlewares/errorHandler.js";
+import workShopRouter from "./routes/workShopRoutes.js";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(cors());
 app.use("/api", userRouter);
 app.use("/api/product", productRoutes);
 app.use("/api/order", orderRouter);
+app.use("/api/workshop", workShopRouter);
 app.set("trust proxy", true)
 
 // Error handling

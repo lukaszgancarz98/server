@@ -73,7 +73,7 @@ export const getOrderPaymentToken = async (id) => {
 
     const result = req.rows[0];
 
-    return { token: result?.token, expire: result?.token_expire_date};
+    return { token: result?.token, expire: result?.token_expire_date, payment: result?.payment_date};
 };
 
 export const getOrderPaymentTokenAndId = async (id) => {

@@ -33,8 +33,9 @@ export const createProduct = async (req, res, next) => {
 
 export const getAllProducts = async (req, res, next) => {
     try {
-        const users = await getAllProductService();
-        handleResponse(res, 200, "Products fetched successfully", users);
+        const { page } = req.body;
+        const products = await getAllProductService(page);
+        handleResponse(res, 200, "Products fetched successfully", products);
     } catch (err) {
         next(err);
     }
@@ -63,8 +64,8 @@ export const updateProductById = async (req, res, next) => {
 
 export const deleteProductById = async (req, res, next) => {
     try {
-        const req = await deleteProductByIdService(req.params.id);
-        handleResponse(res, 200, "Product deleted successfully", req);
+        const response = await deleteProductByIdService(req.params.id);
+        handleResponse(res, 200, "Product deleted successfully", response);
     } catch (err) {
         next(err);
     }
@@ -146,6 +147,7 @@ export const deleteProductType = async (req, res, next) => {
 }
 
 export const deleteProductWithProductTypes = async (req, res, next) => {
+    console.log('X')
     try {
         const product = await deleteProductWithProductTypesService(req.params.id);
         if (!product) {

@@ -4,7 +4,7 @@ import { deleteProductWithProductTypes, getProductTypesByProductId, getProductTy
 const router = express.Router();
 
 router.post("/create", createProduct);
-router.get("/products", getAllProducts);
+router.post("/products", getAllProducts);
 router.post("/createVariants", createProductWithProductsTypes)
 router.post("/productType", createProductType);
 router.get("/productTypes", getProductTypes);

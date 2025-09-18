@@ -59,8 +59,8 @@ export const getOrderById = async (req, res, next) => {
 };
 
 export const updateOrderById = async (req, res, next) => {
-    const { id, email, products, price, paymentorder_id, payment_id, payment_date } = req.body;
-    const dataReceived = { email, products, price, paymentorder_id, payment_id, payment_date };
+    const { id, email, products, price, paymentorder_id, payment_id, payment_date, email_send } = req.body;
+    const dataReceived = { email, products, price, paymentorder_id, payment_id, payment_date, email_send };
     const data = Object.entries(dataReceived).filter(([key, value]) => value !== undefined);
     try {
         const updateOrder = await updateOrderByIdService(id, data);
@@ -119,18 +119,24 @@ export const authPayment = async (req, res, next) => {
     params.append('client_secret', process.env.CLIENT_SECRET);
 
     const tokenExist = await getOrderPaymentToken(id);
-    console.log(tokenExist)
+
+    if (tokenExist.payment) {
+        handleResponse(res, 200, "Order paid", {});
+
+        return;
+    }
+
     if (tokenExist.expire && tokenExist.token) {
-        console.log('XD1')
+
         const now = new Date();
         if (now < new Date(tokenExist.expire)) {
-            console.log('XD2')
+
             handleResponse(res, 200, "Payment authorized", tokenExist.token);
 
             return;
         }
     }
-    console.log('XD3', link)
+
     try {
         const response = await fetch(link, {
         method: 'POST',
@@ -141,7 +147,7 @@ export const authPayment = async (req, res, next) => {
         });
 
         const data = await response.json();
-        console.log(data, 'XD4')
+
         await updateOrderPaymentToken(data, id);
         
         handleResponse(res, 200, "Payment authorized", data.access_token);
@@ -158,13 +164,13 @@ export const payment = async (req, res, next) => {
     const getToken = await getOrderPaymentToken(id);
     if (getToken.expire) {
         const now = new Date();
-        console.log('XD2')
+
         if (!(now < new Date(getToken.expire))) {
             next('Token expired, please refresh page');
-            console.log('XD1')
+
             return;
         }
-        console.log('XD')
+
         const payload = {...data, merchantPosId: process.env.CLIENT_ID};
 
         try {

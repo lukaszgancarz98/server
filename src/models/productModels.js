@@ -9,8 +9,8 @@ export const createProductService = async (data) => {
     return result.rows[0];
 };
 
-export const getAllProductService = async () => {
-    const result = await pool.query("SELECT * FROM products");
+export const getAllProductService = async (page) => {
+    const result = await pool.query("SELECT * FROM products WHERE page=$1", [page]);
 
     return result.rows;
 };
@@ -101,8 +101,8 @@ export const deleteProductTypeService = async (email) => {
 
 export const createProductWithProductsTypesService = async (product, productTypes) => {
     const resultProduct = await pool.query(
-        "INSERT INTO products (name, description, image) VALUES ($1, $2, $3) RETURNING *",
-        [product.name, product.description, product.image]
+        "INSERT INTO products (name, description, image, size_image, category, tag, page) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+        [product.name, product.description, product.image, product.size_image, product.category, product.tag, product.page]
     );
 
     const promises = productTypes.map(element => {
