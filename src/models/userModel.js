@@ -43,6 +43,7 @@ export const loginUserService = async (email, password) => {
 export const loginAdminUserService = async (email, password) => {
     const result = await pool.query("SELECT * FROM users WHERE email=$1 AND type=$2", [email, 'admin']);
     const user = result.rows[0];
+
     if (!user) return null;
 
     const match = await bcrypt.compare(password, user.password);

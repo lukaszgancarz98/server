@@ -30,7 +30,7 @@ export const getProductTypesByProductIdService = async (id) => {
 };
 
 export const updateProductByIdService = async (id, data) => {
-    const req = await pool.query("UPDATE products SET description=$1, image=$2 WHERE id=$3 RETURNING *", [data.description, data.image, id]);
+    const req = await pool.query("UPDATE products SET name=$1, description=$2, image=$3, category=$4, page=$5, tag=$6, size_image=$7, file_id=$8 WHERE id=$9 RETURNING *", [data.name, data.description, data.image, data.category, data.page, data.tag, data.size_iamge, data.file_id, id]);
     const result = req.rows[0];
 
     return result;
