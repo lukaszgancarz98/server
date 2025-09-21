@@ -9,7 +9,7 @@ export const productType = pgTable("productType", {
 	size: varchar({ length: 20 }),
 	color: varchar({ length: 255 }),
 	shortDescription: varchar().notNull(),
-	sizePlaceHolder: varchar(),
+	size_placeholder: varchar(),
 	stockQuantity: numeric("stock_quantity").notNull(),
 	productId: varchar().notNull(),
 	images: varchar().array(),

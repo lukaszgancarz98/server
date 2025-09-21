@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import { getDocuments, getDocument, addDocument, deleteProductWithProductTypes, getProductTypesByProductId, getProductTypeById, createProductWithProductsTypes, deleteProductType, updateProductTypeByID, getProductTypes, createProduct, getAllProducts, getProductById, updateProductById, deleteProductById, createProductType, updateProductProductTypesPrice } from "../controllers/productController.js";
+import { updateProductTypes, getDocuments, getDocument, addDocument, deleteProductWithProductTypes, getProductTypesByProductId, getProductTypeById, createProductWithProductsTypes, deleteProductType, updateProductTypeByID, getProductTypes, createProduct, getAllProducts, getProductById, updateProductById, deleteProductById, createProductType, updateProductProductTypesPrice } from "../controllers/productController.js";
 
 const router = express.Router();
 const upload = multer();
@@ -10,6 +10,7 @@ router.post("/products", getAllProducts);
 router.post("/createVariants", createProductWithProductsTypes)
 router.post("/productType", createProductType);
 router.get("/productTypes", getProductTypes);
+router.post("/productTypes", updateProductTypes);
 router.get("/productType/:id", getProductTypeById);
 router.get("/productType/product/:id", getProductTypesByProductId);
 router.post("/productType/:id", updateProductTypeByID);

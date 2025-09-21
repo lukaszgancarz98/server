@@ -123,8 +123,8 @@ export const getProductTypesByProductId = async (req, res, next) => {
 }
 
 export const updateProductTypeByID = async (req, res, next) => {
-        const { email, status, products, price } = req.body;
-        const dataReceived = { email, status, products, price, id: req.params.id };
+        const { price, size, color, size_placeholder, stock_quantity, images, sale_price, sale_amount } = req.body;
+        const dataReceived = { price, size, color, size_placeholder, stock_quantity, images, sale_price, sale_amount, id: req.params.id };
         const data = Object.entries(dataReceived).filter(([key, value]) => value !== undefined);
     try {
         const product = await updateProductTypesByIdService(data);
@@ -132,6 +132,25 @@ export const updateProductTypeByID = async (req, res, next) => {
             return handleResponse(res, 404, "ProductType not updated found");
         }
         handleResponse(res, 200, "ProductType updated successfully", product);
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const updateProductTypes = async (req, res, next) => {
+    const { productTypes } = req.body;
+
+    try {
+        const requests = productTypes.map(async item => {
+            const { price, size, color, size_placeholder, stock_quantity, images, sale_price, sale_amount, id } = item;
+            const dataReceived = { price, size, color, size_placeholder, stock_quantity, images, sale_price, sale_amount, id };
+            const data = Object.entries(dataReceived).filter(([key, value]) => value !== undefined);
+
+            return await updateProductTypesByIdService(data);
+        });
+        const results = await Promise.all(requests);
+
+        handleResponse(res, 200, "ProductTypes updated successfully", results);
     } catch (err) {
         next(err);
     }

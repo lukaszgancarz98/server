@@ -7,7 +7,7 @@ CREATE TABLE "productType" (
 	"size" varchar(20),
 	"color" varchar(255),
 	"shortDescription" varchar NOT NULL,
-	"sizePlaceHolder" varchar,
+	"size_placeholder" varchar,
 	"stock_quantity" numeric NOT NULL,
 	"productId" varchar NOT NULL,
 	"images" varchar[]

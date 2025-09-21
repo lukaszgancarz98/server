@@ -39,8 +39,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "sizePlaceHolder": {
-          "name": "sizePlaceHolder",
+        "size_placeholder": {
+          "name": "size_placeholder",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false

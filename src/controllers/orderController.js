@@ -13,6 +13,7 @@ import {
     getOrdersByIdService
 } from "../models/orderModels.js";
 import dotenv from "dotenv";
+import { getProductByIdProductTypesService } from "../models/productModels.js";
 
 const handleResponse = (res, status, message, data = null) => {
     res.status(status).json({ status, message, data });
@@ -59,8 +60,8 @@ export const getOrderById = async (req, res, next) => {
 };
 
 export const updateOrderById = async (req, res, next) => {
-    const { id, email, products, price, paymentorder_id, payment_id, payment_date, email_send } = req.body;
-    const dataReceived = { email, products, price, paymentorder_id, payment_id, payment_date, email_send };
+    const { id, email, products, price, paymentorder_id, payment_id, payment_date, email_send, finalize_date } = req.body;
+    const dataReceived = { email, products, price, paymentorder_id, payment_id, payment_date, email_send, finalize_date };
     const data = Object.entries(dataReceived).filter(([key, value]) => value !== undefined);
     try {
         const updateOrder = await updateOrderByIdService(id, data);
@@ -237,6 +238,33 @@ export const getOrdersById = async (req, res, next) => {
     try {
         const updateOrder = await getOrdersByIdService(req.params.id);
         handleResponse(res, 200, "Order updated successfully", updateOrder);
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const checkProducts = async (req, res, next) => {
+    const orderId = req.params.id;
+    try {
+        const updateOrder = await getOrderByIdService(orderId);
+
+        const products = updateOrder.products;
+        const requests = products.map(async item => await getProductByIdProductTypesService(item));
+        const results = await Promise.all(requests);
+
+        const types = [];
+
+        results.forEach(item => {
+            const category = item.category?.split("-");
+            const find = types.includes(category[0]);
+
+            if (find) {
+                return;
+            }
+            types.push(category[0]);
+        })
+
+        handleResponse(res, 200, "Order updated successfully", types);
     } catch (err) {
         next(err);
     }
