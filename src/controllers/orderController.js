@@ -40,7 +40,7 @@ export const createOrder = async (req, res, next) => {
 
 export const getAllOrders = async (req, res, next) => {
     try {
-        const users = await getAllOrdersService();
+        const users = await getAllOrdersService(req.params.page);
         handleResponse(res, 200, "Orders fetched successfully", users);
     } catch (err) {
         next(err);
@@ -117,7 +117,7 @@ export const authPayment = async (req, res, next) => {
     const params = new URLSearchParams();
     params.append('grant_type', process.env.GRANT_TYPE || 'client_credentials');
     params.append('client_id', process.env.CLIENT_ID || '495999');
-    params.append('client_secret', process.env.CLIENT_SECRET) || 'af27000f068e1bad95cc6d8ca55b2a3c';
+    params.append('client_secret', process.env.CLIENT_SECRET || 'af27000f068e1bad95cc6d8ca55b2a3c');
 
     const tokenExist = await getOrderPaymentToken(id);
 
@@ -172,7 +172,7 @@ export const payment = async (req, res, next) => {
             return;
         }
 
-        const payload = {...data, merchantPosId: process.env.CLIENT_ID};
+        const payload = {...data, merchantPosId: process.env.CLIENT_ID || '495999'};
 
         try {
             const response = await fetch(link, {

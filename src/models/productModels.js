@@ -60,8 +60,18 @@ export const deleteProductWithProductTypesService = async (id) => {
 
 export const createProductTypeService = async (data) => {
     const req = await pool.query(
-        'INSERT INTO productType (price, size, color, size_placeholder, stock_quantity, images, sale_price, sale_amount, "productId") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-        [data.price, data.size, data.color, data.size_placeholder, data.stock_quantity, data.images, data.sale_price, data.sale_amount, data.productId, data.id]);
+        'INSERT INTO "productType" (price, size, color, size_placeholder, stock_quantity, images, sale_price, sale_amount, "productId") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+        [data.price, data.size, data.color, data.size_placeholder, data.stock_quantity, data.images, data.sale_price, data.sale_amount, data.productId]);
+    const result = req.rows[0];
+
+    return result;
+};
+
+export const updateDocumentService = async (originalname, buffer, id) => {
+    const req = await pool.query(
+        "UPDATE files SET name=$1, file=$2 WHERE id=$3 RETURNING *",
+        [originalname, buffer, id]);
+    console.log(req, 'xD')
     const result = req.rows[0];
 
     return result;
@@ -118,10 +128,10 @@ export const updateProductTypesByIdService = async (data) => {
     return result.rows[0];
 };
 
-export const deleteProductTypeService = async (email) => {
-    const req = await pool.query("SELECT * FROM orders WHERE email = $1", [email]);
-
-    const result = req.rows[0];
+export const deleteProductTypeService = async (id) => {
+    const req = await pool.query('DELETE FROM "productType" WHERE id=$1', [id]);
+    console.log(req)
+    const result = req.rowCount;
 
     return result;
 };

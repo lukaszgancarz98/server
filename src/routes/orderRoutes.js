@@ -4,7 +4,7 @@ import { checkProducts, getOrdersById, checkPayment, updateProductAmount, paymen
 const router = express.Router();
 
 router.post("/create", createOrder);
-router.get("/all", getAllOrders);
+router.get("/all/:page", getAllOrders);
 router.get("/auth/:id", authPayment);
 router.post("/payment/:id", payment);
 router.get("/checkProducts/:id", checkProducts);

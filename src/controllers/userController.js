@@ -13,10 +13,10 @@ const handleResponse = (res, status, message, data = null) => {
 };
 
 export const createUser = async (req, res, next) => {
-    const { name, email, surname, password } = req.body;
+    const { name, email, surname, password, type } = req.body;
 
     try {
-        const newUser = await createUserService(name, email, surname, password);
+        const newUser = await createUserService(name, email, surname, password, type);
         if (!newUser) {
             return handleResponse(res, 400, "User not created");
         }
@@ -58,10 +58,10 @@ export const updateUserById = async (req, res, next) => {
 };
 
 export const loginUser = async (req, res, next) => {
-    const { email, password } = req.body;
+    const { email, password, type } = req.body;
 
     try {
-        const login = await loginUserService(email, password);
+        const login = await loginUserService(email, password, type);
         if (!login) {
             return handleResponse(res, 401, "Invalid login credentials");
         }

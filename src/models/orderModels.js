@@ -1,7 +1,7 @@
 import pool from "../config/db.js";
 
-export const getAllOrdersService = async () => {
-    const result = await pool.query("SELECT * FROM orders");
+export const getAllOrdersService = async (page) => {
+    const result = await pool.query("SELECT * FROM orders WHERE page=$1", [page]);
     return result.rows;
 };
 

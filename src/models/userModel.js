@@ -11,11 +11,11 @@ export const getUserByIdService = async (id) => {
     return result.rows[0];
 };
 
-export const createUserService = async (name, email, surname, password) => {
+export const createUserService = async (name, email, surname, password, type) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
         "INSERT INTO users (email, name, surname, password, type) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, name, surname",
-        [email, name, surname, hashedPassword, 'user']
+        [email, name, surname, hashedPassword, type]
     );
     return result.rows[0];
 };
@@ -28,8 +28,8 @@ export const updateUserByIdService = async (id, name, email) => {
     return result.rows[0];
 };
 
-export const loginUserService = async (email, password) => {
-    const result = await pool.query("SELECT * FROM users WHERE email=$1", [email]);
+export const loginUserService = async (email, password, type) => {
+    const result = await pool.query("SELECT * FROM users WHERE email=$1 AND page=$2", [email, type]);
     const user = result.rows[0];
     if (!user) return null;
 
@@ -53,7 +53,7 @@ export const loginAdminUserService = async (email, password) => {
 };
 
 export const authGoogleUserService = async (data) => {
-    const result = await pool.query("SELECT * FROM users WHERE email=$1", [data.email]);
+    const result = await pool.query("SELECT * FROM users WHERE email=$1 AND type=$2", [data.email, data.type]);
     const user = result.rows[0];
     if (!user) {
         const hashedPassword = await bcrypt.hash(data.email, 10);

@@ -15,6 +15,7 @@ import {
     deleteProductWithProductTypesService,
     addDocumentService,
     getDocumentService,
+    updateDocumentService,
 } from "../models/productModels.js";
 import { getOrderByIdService } from "../models/orderModels.js";
 
@@ -184,6 +185,21 @@ export const addDocument = async (req, res, next) => {
     const { originalname, buffer } = req.file;
     try {
         const product = await addDocumentService(originalname, buffer);
+        if (!product) {
+            return handleResponse(res, 404, "Upload failed");
+        }
+        handleResponse(res, 200, "File uploaded successfully", product);
+    } catch (err) {
+        next(err);
+    }
+}
+
+export const updateDocument = async (req, res, next) => {
+    const { originalname, buffer } = req.file;
+    const id = req.params.id;
+    console.log(id, originalname)
+    try {
+        const product = await updateDocumentService(originalname, buffer, id);
         if (!product) {
             return handleResponse(res, 404, "Upload failed");
         }
