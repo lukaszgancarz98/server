@@ -1,35 +1,49 @@
-import pool from "../config/db.js";
-import bcrypt from "bcrypt";
+import pool from '../config/db.js';
+import bcrypt from 'bcrypt';
 
 export const getAllUsersService = async () => {
-    const result = await pool.query("SELECT id, email, name, surname FROM users");
+    const result = await pool.query(
+        'SELECT id, email, name, surname FROM users',
+    );
     return result.rows;
 };
 
 export const getUserByIdService = async (id) => {
-    const result = await pool.query("SELECT id, email, name, surname FROM users WHERE id = $1", [id]);
+    const result = await pool.query(
+        'SELECT id, email, name, surname FROM users WHERE id = $1',
+        [id],
+    );
     return result.rows[0];
 };
 
-export const createUserService = async (name, email, surname, password, type) => {
+export const createUserService = async (
+    name,
+    email,
+    surname,
+    password,
+    type,
+) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
-        "INSERT INTO users (email, name, surname, password, type) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, name, surname",
-        [email, name, surname, hashedPassword, type]
+        'INSERT INTO users (email, name, surname, password, type) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, name, surname',
+        [email, name, surname, hashedPassword, type],
     );
     return result.rows[0];
 };
 
 export const updateUserByIdService = async (id, name, email) => {
     const result = await pool.query(
-        "UPDATE users SET email=$1, name=$2 WHERE id=$3 RETURNING id, email, name",
-        [email, name, id]
+        'UPDATE users SET email=$1, name=$2 WHERE id=$3 RETURNING id, email, name',
+        [email, name, id],
     );
     return result.rows[0];
 };
 
 export const loginUserService = async (email, password, type) => {
-    const result = await pool.query("SELECT * FROM users WHERE email=$1 AND page=$2", [email, type]);
+    const result = await pool.query(
+        'SELECT * FROM users WHERE email=$1 AND page=$2',
+        [email, type],
+    );
     const user = result.rows[0];
     if (!user) return null;
 
@@ -41,7 +55,10 @@ export const loginUserService = async (email, password, type) => {
 };
 
 export const loginAdminUserService = async (email, password) => {
-    const result = await pool.query("SELECT * FROM users WHERE email=$1 AND type=$2", [email, 'admin']);
+    const result = await pool.query(
+        'SELECT * FROM users WHERE email=$1 AND type=$2',
+        [email, 'admin'],
+    );
     const user = result.rows[0];
 
     if (!user) return null;
@@ -53,17 +70,20 @@ export const loginAdminUserService = async (email, password) => {
 };
 
 export const authGoogleUserService = async (data) => {
-    const result = await pool.query("SELECT * FROM users WHERE email=$1 AND type=$2", [data.email, data.type]);
+    const result = await pool.query(
+        'SELECT * FROM users WHERE email=$1 AND type=$2',
+        [data.email, data.type],
+    );
     const user = result.rows[0];
     if (!user) {
         const hashedPassword = await bcrypt.hash(data.email, 10);
         const result = await pool.query(
-            "INSERT INTO users (email, name, surname, password, type) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, name, surname",
-            [data.email, data.name, data.surname, hashedPassword, 'user']
+            'INSERT INTO users (email, name, surname, password, type) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, name, surname',
+            [data.email, data.name, data.surname, hashedPassword, 'user'],
         );
 
         return result.rows[0];
-    };
+    }
 
     const match = await bcrypt.compare(data.email, user.password);
     if (!match) return null;

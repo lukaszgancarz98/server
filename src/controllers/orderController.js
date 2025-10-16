@@ -10,10 +10,10 @@ import {
     getOrderPaymentToken,
     updateProductAmountService,
     getOrderPaymentTokenAndId,
-    getOrdersByIdService
-} from "../models/orderModels.js";
-import dotenv from "dotenv";
-import { getProductByIdProductTypesService } from "../models/productModels.js";
+    getOrdersByIdService,
+} from '../models/orderModels.js';
+import dotenv from 'dotenv';
+import { getProductByIdProductTypesService } from '../models/productModels.js';
 
 const handleResponse = (res, status, message, data = null) => {
     res.status(status).json({ status, message, data });
@@ -23,16 +23,19 @@ dotenv.config();
 
 //https://secure.payu.com original
 //https://secure.snd.payu.com sandbox
-const url = process.env.PAYMENT_PROD === "true" ? 'https://secure.payu.com' : 'https://secure.snd.payu.com';
+const url =
+    process.env.PAYMENT_PROD === 'true'
+        ? 'https://secure.payu.com'
+        : 'https://secure.snd.payu.com';
 
 export const createOrder = async (req, res, next) => {
     const { price, products, email } = req.body;
     try {
         const newOrder = await createOrderService(price, products, email);
         if (!newOrder) {
-            return handleResponse(res, 400, "Order not created");
+            return handleResponse(res, 400, 'Order not created');
         }
-        handleResponse(res, 201, "Order created successfully", newOrder);
+        handleResponse(res, 201, 'Order created successfully', newOrder);
     } catch (err) {
         next(err);
     }
@@ -41,7 +44,7 @@ export const createOrder = async (req, res, next) => {
 export const getAllOrders = async (req, res, next) => {
     try {
         const users = await getAllOrdersService(req.params.page);
-        handleResponse(res, 200, "Orders fetched successfully", users);
+        handleResponse(res, 200, 'Orders fetched successfully', users);
     } catch (err) {
         next(err);
     }
@@ -51,21 +54,42 @@ export const getOrderById = async (req, res, next) => {
     try {
         const order = await getOrderByIdService(req.params.id);
         if (!order) {
-            return handleResponse(res, 404, "Order not found");
+            return handleResponse(res, 404, 'Order not found');
         }
-        handleResponse(res, 200, "Order fetched successfully", order);
+        handleResponse(res, 200, 'Order fetched successfully', order);
     } catch (err) {
         next(err);
     }
 };
 
 export const updateOrderById = async (req, res, next) => {
-    const { id, email, products, price, paymentorder_id, payment_id, payment_date, email_send, finalize_date } = req.body;
-    const dataReceived = { email, products, price, paymentorder_id, payment_id, payment_date, email_send, finalize_date };
-    const data = Object.entries(dataReceived).filter(([key, value]) => value !== undefined);
+    const {
+        id,
+        email,
+        products,
+        price,
+        paymentorder_id,
+        payment_id,
+        payment_date,
+        email_send,
+        finalize_date,
+    } = req.body;
+    const dataReceived = {
+        email,
+        products,
+        price,
+        paymentorder_id,
+        payment_id,
+        payment_date,
+        email_send,
+        finalize_date,
+    };
+    const data = Object.entries(dataReceived).filter(
+        ([key, value]) => value !== undefined,
+    );
     try {
         const updateOrder = await updateOrderByIdService(id, data);
-        handleResponse(res, 200, "Order updated successfully", updateOrder);
+        handleResponse(res, 200, 'Order updated successfully', updateOrder);
     } catch (err) {
         next(err);
     }
@@ -74,7 +98,7 @@ export const updateOrderById = async (req, res, next) => {
 export const deleteOrderById = async (req, res, next) => {
     try {
         const request = await deleteOrderByIdService(req.params.id);
-        handleResponse(res, 200, "Order deleted successfully", request);
+        handleResponse(res, 200, 'Order deleted successfully', request);
     } catch (err) {
         next(err);
     }
@@ -84,9 +108,9 @@ export const getOrderByEmail = async (req, res, next) => {
     try {
         const order = await getOrderByEmailService(req.params.email);
         if (!order) {
-            return handleResponse(res, 404, "Order not found");
+            return handleResponse(res, 404, 'Order not found');
         }
-        handleResponse(res, 200, "Order fetched successfully", order);
+        handleResponse(res, 200, 'Order fetched successfully', order);
     } catch (err) {
         next(err);
     }
@@ -94,8 +118,11 @@ export const getOrderByEmail = async (req, res, next) => {
 
 export const updateOrderDetails = async (req, res, next) => {
     try {
-        const updateOrder = await updateOrderDetailsService(req.params.id, req.body);
-        handleResponse(res, 200, "Order updated successfully", updateOrder);
+        const updateOrder = await updateOrderDetailsService(
+            req.params.id,
+            req.body,
+        );
+        handleResponse(res, 200, 'Order updated successfully', updateOrder);
     } catch (err) {
         next(err);
     }
@@ -104,8 +131,11 @@ export const updateOrderDetails = async (req, res, next) => {
 export const updateProductAmount = async (req, res, next) => {
     const { amount } = req.body;
     try {
-        const updateOrder = await updateProductAmountService(req.params.id, amount);
-        handleResponse(res, 200, "Order updated successfully", updateOrder);
+        const updateOrder = await updateProductAmountService(
+            req.params.id,
+            amount,
+        );
+        handleResponse(res, 200, 'Order updated successfully', updateOrder);
     } catch (err) {
         next(err);
     }
@@ -117,22 +147,23 @@ export const authPayment = async (req, res, next) => {
     const params = new URLSearchParams();
     params.append('grant_type', process.env.GRANT_TYPE || 'client_credentials');
     params.append('client_id', process.env.CLIENT_ID || '495999');
-    params.append('client_secret', process.env.CLIENT_SECRET || 'af27000f068e1bad95cc6d8ca55b2a3c');
+    params.append(
+        'client_secret',
+        process.env.CLIENT_SECRET || 'af27000f068e1bad95cc6d8ca55b2a3c',
+    );
 
     const tokenExist = await getOrderPaymentToken(id);
 
     if (tokenExist.payment) {
-        handleResponse(res, 200, "Order paid", {});
+        handleResponse(res, 200, 'Order paid', {});
 
         return;
     }
 
     if (tokenExist.expire && tokenExist.token) {
-
         const now = new Date();
         if (now < new Date(tokenExist.expire)) {
-
-            handleResponse(res, 200, "Payment authorized", tokenExist.token);
+            handleResponse(res, 200, 'Payment authorized', tokenExist.token);
 
             return;
         }
@@ -140,18 +171,16 @@ export const authPayment = async (req, res, next) => {
 
     try {
         const response = await fetch(link, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: params.toString()
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString(),
         });
 
         const data = await response.json();
 
         await updateOrderPaymentToken(data, id);
-        
-        handleResponse(res, 200, "Payment authorized", data.access_token);
+
+        handleResponse(res, 200, 'Payment authorized', data.access_token);
     } catch (err) {
         next(err);
     }
@@ -172,13 +201,16 @@ export const payment = async (req, res, next) => {
             return;
         }
 
-        const payload = {...data, merchantPosId: process.env.CLIENT_ID || '495999'};
+        const payload = {
+            ...data,
+            merchantPosId: process.env.CLIENT_ID || '495999',
+        };
 
         try {
             const response = await fetch(link, {
                 method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${getToken.token}`,
                 },
                 redirect: 'manual',
@@ -186,10 +218,12 @@ export const payment = async (req, res, next) => {
             });
 
             const data = await response.json();
-            
-            await updateOrderByIdService(id, [ [ 'paymentorder_id', data.orderId ] ]);
-            
-            handleResponse(res, 200, "Payment authorized", data);
+
+            await updateOrderByIdService(id, [
+                ['paymentorder_id', data.orderId],
+            ]);
+
+            handleResponse(res, 200, 'Payment authorized', data);
         } catch (err) {
             next(err);
         }
@@ -217,15 +251,15 @@ export const checkPayment = async (req, res, next) => {
             const response = await fetch(link, {
                 method: 'GET',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${getData.token}`,
                 },
                 redirect: 'manual',
             });
 
             const data = await response.json();
-            
-            handleResponse(res, 200, "Payment authorized", data);
+
+            handleResponse(res, 200, 'Payment authorized', data);
         } catch (err) {
             next(err);
         }
@@ -237,7 +271,7 @@ export const checkPayment = async (req, res, next) => {
 export const getOrdersById = async (req, res, next) => {
     try {
         const updateOrder = await getOrdersByIdService(req.params.id);
-        handleResponse(res, 200, "Order updated successfully", updateOrder);
+        handleResponse(res, 200, 'Order updated successfully', updateOrder);
     } catch (err) {
         next(err);
     }
@@ -249,22 +283,24 @@ export const checkProducts = async (req, res, next) => {
         const updateOrder = await getOrderByIdService(orderId);
 
         const products = updateOrder.products;
-        const requests = products.map(async item => await getProductByIdProductTypesService(item));
+        const requests = products.map(
+            async (item) => await getProductByIdProductTypesService(item),
+        );
         const results = await Promise.all(requests);
 
         const types = [];
 
-        results.forEach(item => {
-            const category = item.category?.split("-");
+        results.forEach((item) => {
+            const category = item.category?.split('-');
             const find = types.includes(category[0]);
 
             if (find) {
                 return;
             }
             types.push(category[0]);
-        })
+        });
 
-        handleResponse(res, 200, "Order updated successfully", types);
+        handleResponse(res, 200, 'Order updated successfully', types);
     } catch (err) {
         next(err);
     }

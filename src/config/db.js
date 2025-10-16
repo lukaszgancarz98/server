@@ -1,7 +1,7 @@
-import pkg from "pg";
-import dotenv from "dotenv";
+import pkg from 'pg';
+import dotenv from 'dotenv';
 
-dotenv.config()
+dotenv.config();
 
 const { Pool } = pkg;
 
@@ -13,8 +13,8 @@ const pool = new Pool({
     port: process.env.DB_PORT || '5432',
 });
 
-pool.on("connect", () => {
-    console.log("Connection pool established with DB");
+pool.on('connect', () => {
+    console.log('Connection pool established with DB');
 });
 
 export default pool;

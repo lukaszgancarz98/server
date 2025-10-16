@@ -1,5 +1,9 @@
-import express from "express";
-import { createWorkShopReceiver, getAllWorkShopReceivers, deleteWorkShopReceiver } from "../controllers/workShopController.js";
+import express from 'express';
+import {
+    createWorkShopReceiver,
+    getAllWorkShopReceivers,
+    deleteWorkShopReceiver,
+} from '../controllers/workShopController.js';
 
 const router = express.Router();
 

@@ -1,19 +1,24 @@
-import pool from "../config/db.js";
-import bcrypt from "bcrypt";
+import pool from '../config/db.js';
+import bcrypt from 'bcrypt';
 
 export const createWorkShopReceiverService = async (email, id) => {
     const data = await getAllWorkShopReceiversService();
-    const findExisting = data.find(item => item.email === email && id === item.workshop_id);
+    const findExisting = data.find(
+        (item) => item.email === email && id === item.workshop_id,
+    );
     if (findExisting) {
         return {};
     }
-    const result = await pool.query("INSERT INTO workshop (email, workshop_id) VALUES ($1, $2) RETURNING *", [email, id]);
-    
+    const result = await pool.query(
+        'INSERT INTO workshop (email, workshop_id) VALUES ($1, $2) RETURNING *',
+        [email, id],
+    );
+
     return result.rows;
 };
 
 export const getAllWorkShopReceiversService = async () => {
-    const result = await pool.query("SELECT * FROM workshop");
+    const result = await pool.query('SELECT * FROM workshop');
 
     return result.rows;
 };
