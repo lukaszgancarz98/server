@@ -20,12 +20,16 @@ import {
     deleteProductById,
     createProductType,
     updateProductProductTypesPrice,
+    postImage,
+    deleteImage,
 } from '../controllers/productController.js';
 
 const router = express.Router();
 const upload = multer();
 
 router.post('/create', createProduct);
+router.post('/images', upload.single('file'), postImage);
+router.delete('/images', deleteImage);
 router.post('/products', getAllProducts);
 router.post('/createVariants', createProductWithProductsTypes);
 router.post('/productType', createProductType);

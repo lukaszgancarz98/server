@@ -18,6 +18,16 @@ import {
     updateDocumentService,
 } from '../models/productModels.js';
 import { getOrderByIdService } from '../models/orderModels.js';
+import cloudinary from 'cloudinary';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const handleResponse = (res, status, message, data = null) => {
     res.status(status).json({ status, message, data });
@@ -395,5 +405,46 @@ export const updateProductProductTypesPrice = async (req, res, next) => {
         );
     } catch (err) {
         next(err);
+    }
+};
+
+export const postImage = async (req, res, next) => {
+    try {
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        // Convert to Base64 Data URI
+        const base64 = file.buffer.toString('base64');
+        const dataUri = `data:${file.mimetype};base64,${base64}`;
+
+        // Upload to Cloudinary
+        const cloudResult = await cloudinary.v2.uploader.upload(dataUri, {
+            folder: 'products',
+        });
+
+        res.json(cloudResult);
+    } catch (error) {
+        console.error('Upload failed:', error);
+        res.status(500).json({ error: 'Upload failed' });
+    }
+};
+
+export const deleteImage = async (req, res, next) => {
+    try {
+        const { publicId } = req.body;
+
+        if (!publicId) {
+            return res.status(400).json({ error: 'Missing publicId' });
+        }
+
+        const result = await cloudinary.v2.uploader.destroy(publicId);
+
+        res.json(result);
+    } catch (error) {
+        console.error('Cloudinary delete failed:', error);
+        res.status(500).json({ error: 'Delete failed' });
     }
 };

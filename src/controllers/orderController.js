@@ -145,11 +145,11 @@ export const authPayment = async (req, res, next) => {
     const link = `${url}/pl/standard/user/oauth/authorize`;
     const id = req.params.id;
     const params = new URLSearchParams();
-    params.append('grant_type', process.env.GRANT_TYPE || 'client_credentials');
-    params.append('client_id', process.env.CLIENT_ID || '495999');
+    params.append('grant_type', process.env.GRANT_TYPE);
+    params.append('client_id', process.env.CLIENT_ID);
     params.append(
         'client_secret',
-        process.env.CLIENT_SECRET || 'af27000f068e1bad95cc6d8ca55b2a3c',
+        process.env.CLIENT_SECRET,
     );
 
     const tokenExist = await getOrderPaymentToken(id);
@@ -203,7 +203,7 @@ export const payment = async (req, res, next) => {
 
         const payload = {
             ...data,
-            merchantPosId: process.env.CLIENT_ID || '495999',
+            merchantPosId: process.env.CLIENT_ID,
         };
 
         try {
