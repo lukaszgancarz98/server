@@ -18,10 +18,10 @@ app.use(express.json());
 app.use(cors());
 
 //Routes
-app.use('/api', userRouter);
-app.use('/api/product', productRoutes);
-app.use('/api/order', orderRouter);
-app.use('/api/workshop', workShopRouter);
+app.use('/apim', userRouter);
+app.use('/apim/product', productRoutes);
+app.use('/apim/order', orderRouter);
+app.use('/apim/workshop', workShopRouter);
 app.set('trust proxy', true);
 
 // Error handling
