@@ -147,10 +147,7 @@ export const authPayment = async (req, res, next) => {
     const params = new URLSearchParams();
     params.append('grant_type', process.env.GRANT_TYPE);
     params.append('client_id', process.env.CLIENT_ID);
-    params.append(
-        'client_secret',
-        process.env.CLIENT_SECRET,
-    );
+    params.append('client_secret', process.env.CLIENT_SECRET);
 
     const tokenExist = await getOrderPaymentToken(id);
 
@@ -201,10 +198,7 @@ export const payment = async (req, res, next) => {
             return;
         }
 
-        const payload = {
-            ...data,
-            merchantPosId: process.env.CLIENT_ID,
-        };
+        const payload = { ...data, merchantPosId: process.env.CLIENT_ID };
 
         try {
             const response = await fetch(link, {
