@@ -1,7 +1,6 @@
 import pool from '../config/db.js';
 
 export const createCaseService = async (name, email, description, type) => {
-    console.log('Creating case with:', { name, email, description, type });
     const result = await pool.query(
         'INSERT INTO fenix (name, email, description, type) VALUES ($1, $2, $3, $4) RETURNING id, name, email, description, type',
         [name, email, description, type],
