@@ -1,5 +1,4 @@
 import pool from '../config/db.js';
-import bcrypt from 'bcrypt';
 
 export const createWorkShopReceiverService = async (email, id, page, name) => {
     const data = await getAllWorkShopReceiversService();

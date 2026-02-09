@@ -12,7 +12,12 @@ export const createWorkShopReceiver = async (req, res, next) => {
     const { email, id, page, name } = req.body;
 
     try {
-        const newReciver = await createWorkShopReceiverService(email, id, page, name);
+        const newReciver = await createWorkShopReceiverService(
+            email,
+            id,
+            page,
+            name,
+        );
         if (!newReciver) {
             return handleResponse(res, 400, 'Reciver not created');
         }
